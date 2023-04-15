@@ -103,3 +103,58 @@ def height(node):
 
 # printing levelOrder (Used for testing the code)
 #printLevelOrder(NodeList[0])
+import sys
+
+def Querydiagonals(query):
+  return InternalNode(Point(query[0][0],query[0][1]),Point(query[0][0],query[1][1]),Point(query[1][0],query[1][1]),Point(query[1][0],query[0][1]))
+
+def nodeDiagonals(curr):
+  longitudeList = []
+  latitudeList = []
+  for i in range(len(curr.MMBR)):
+    longitudeList.append(curr.MMBR[i].longitude)
+    latitudeList.append(curr.MMBR[i].latitude)
+  return min(longitudeList), min(latitudeList), max(longitudeList), max(latitudeList)
+
+def doOverlap(l1, r1, l2, r2):
+  print(r2.longitude,r2.latitude,l2.longitude,l2.latitude)
+  if l1.longitude == r1.longitude or l1.latitude == r1.latitude or r2.longitude == l2.longitude or l2.latitude == r2.latitude:
+    return False
+  if l1.longitude > r2.longitude or l2.longitude > r1.longitude:
+    return False
+  if r1.latitude > l2.latitude or r2.latitude > l1.latitude:
+    return False
+  else:
+    return True
+
+def processQuery(query,curr,overlapList):
+  if curr == None:
+    return
+  if curr.left == None:
+    return
+  if curr.right == None:
+    return
+  longitudeLeftMin, latitudeLeftMin, longitudeLeftMax, latitudeLeftMax = nodeDiagonals(curr.left)
+  longitudeRightMin, latitudeRightMin, longitudeRightMax, latitudeRightMax = nodeDiagonals(curr.right)
+  longitudeMin, latitudeMin, longitudeMax, latitudeMax = nodeDiagonals(query)
+  if(doOverlap(Point(longitudeLeftMin,latitudeLeftMax),Point(longitudeLeftMax,latitudeLeftMin),Point(longitudeMin,latitudeMax),Point(longitudeMax,latitudeMin))):
+      print(curr.left.MMBR[0].longitude, curr.left.MMBR[0].latitude, end = " ")
+      print(curr.left.MMBR[1].longitude, curr.left.MMBR[1].latitude, end = " ")
+      print(curr.left.MMBR[2].longitude, curr.left.MMBR[2].latitude, end = " ")
+      print(curr.left.MMBR[3].longitude, curr.left.MMBR[3].latitude)
+      overlapList.append(curr.left)
+      processQuery(query,curr.left,overlapList)
+  if(doOverlap(Point(longitudeRightMin,latitudeRightMax),Point(longitudeRightMax,latitudeRightMin),Point(longitudeMin,latitudeMax),Point(longitudeMax,latitudeMin))):
+      print(curr.right.MMBR[0].longitude, curr.right.MMBR[0].latitude, end = " ")
+      print(curr.right.MMBR[1].longitude, curr.right.MMBR[1].latitude, end = " ")
+      print(curr.right.MMBR[2].longitude, curr.right.MMBR[2].latitude, end = " ")
+      print(curr.right.MMBR[3].longitude, curr.right.MMBR[3].latitude)      
+      overlapList.append(curr.right)
+      processQuery(query,curr.right,overlapList)
+
+query = [[2,2],[3,3]]
+curr = NodeList[0]
+overlapList = []
+query = Querydiagonals(query)
+processQuery(query,NodeList[0],overlapList)
+print(overlapList)
