@@ -273,6 +273,28 @@ def pointInside(point, point1 , point2):
     else:
         return False
 
+print('Welcome to Aggregation and Sampling')
+print('Enter query range')
+minXVal = math.inf
+minYVal = math.inf
+maxXVal = -math.inf
+maxYVal = -math.inf
+for i in range(4):
+    print(f'Enter Coordinate-{i+1}')
+    print('X-Value',end=":")
+    x = (float(input())) 
+    print('Y-Value',end=":")
+    y = (float(input()))
+    minXVal = min(minXVal,x)
+    maxXVal = max(maxXVal,x)
+    minYVal = min(minYVal,y)
+    maxYVal = max(maxYVal,y)
+
+query = [[minXVal,maxYVal],[maxXVal,minYVal]]
+point1 = Point(minXVal,maxYVal)
+point2 = Point(maxXVal,minYVal)
+
+queryProcessing(point1,point2,headSet)
 
 
 
