@@ -227,8 +227,8 @@ def queryProcessing(point1 , point2, headSet):
                         if pointInside(sample,point1,point2):
                             #Uncomment these lines to get results in csv
                             
-                            newLat,newLong = scaler.inverse_transform([[sample.latitude,sample.longitude]])[0]
-                            csv = csv + "\n" + str(newLat) +"," + str(newLong)
+                            #newLat,newLong = scaler.inverse_transform([[sample.latitude,sample.longitude]])[0]
+                            #csv = csv + "\n" + str(newLat) +"," + str(newLong)
                             result.add(sample) 
                          
                 else:
@@ -236,8 +236,8 @@ def queryProcessing(point1 , point2, headSet):
                         if pointInside(sample,point1,point2):
                             #Uncomment these lines to get results in csv
                             
-                            newLat,newLong = scaler.inverse_transform([[sample.latitude,sample.longitude]])[0]
-                            csv = csv + "\n" + str(newLat) +"," + str(newLong)
+                            #newLat,newLong = scaler.inverse_transform([[sample.latitude,sample.longitude]])[0]
+                            #csv = csv + "\n" + str(newLat) +"," + str(newLong)
                             result.add(sample) 
             curr = curr.next
         count = count+1
@@ -246,9 +246,9 @@ def queryProcessing(point1 , point2, headSet):
         
 #Uncomment these lines to get results in csv
         
-        s1 = f"results{count}.csv"
-        with open(s1, 'w') as out:
-             out.write(csv)
+        #s1 = f"results{count}.csv"
+        #with open(s1, 'w') as out:
+          #   out.write(csv)
             
         answer = 'Y'
         
