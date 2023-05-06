@@ -250,5 +250,91 @@ def doPointOverlap(x1, y1, x2, y2, x, y) :
         return True
     else :
         return False
-    
+# Iterates over the R-tree and appends the final output nodes into the overlapList
+def processQuery(query,curr,overlapList):
+    if curr == None:
+        return
+    if isinstance(curr,LeafNode):
+        longitudeMin, latitudeMin, longitudeMax, latitudeMax = nodeDiagonals(query)
+        if doPointOverlap(longitudeMin, latitudeMin, longitudeMax, latitudeMax,curr.point.longitude,curr.point.latitude):
+            overlapList.append([curr.point])
+        return
+    longitudeMin, latitudeMin, longitudeMax, latitudeMax = nodeDiagonals(query)
+    longitudeCurrMin, latitudeCurrMin, longitudeCurrMax, latitudeCurrMax = nodeDiagonals(curr)
+    if Isoverlap(Point(longitudeMin, latitudeMin),Point(longitudeMax, latitudeMax),Point(longitudeCurrMin, latitudeCurrMin),Point(longitudeCurrMax, latitudeCurrMax)):
+        processQuery(query,curr.left,overlapList)
+        processQuery(query,curr.right,overlapList)
+    else:
+        return
+
+
+# In[55]:
+
+
+import time
+start_time = time.time()
+Data,scaler = populatePreprocessedData('data12.pkl')
+levels = LSTreeSampling(Data)
+RTrees = buildingRTrees(levels)
+print("--- %s seconds to run Preprocessing ---" % (time.time() - start_time))
+
+
+# In[56]:
+
+
+# In[100]:
+
+# Scaling the query input given by the user be in sync with tree data
+def queryScaling(query):
+    scaler = MinMaxScaler(feature_range=(0, 10000))
+    query = scaler.fit_transform(query)
+    return query
+
+# Driver code that iterates over the R-trees
+print('Welcome to Aggregation and Sampling')
+print('Enter query range')
+minXVal = math.inf
+minYVal = math.inf
+maxXVal = -math.inf
+maxYVal = -math.inf
+for i in range(4):
+    print(f'Enter Coordinate-{i+1}')
+    print('Latitude',end=":")
+    x = (float(input())) 
+    print('Longitude',end=":")
+    y = (float(input()))
+    minXVal = min(minXVal,x)
+    maxXVal = max(maxXVal,x)
+    minYVal = min(minYVal,y)
+    maxYVal = max(maxYVal,y)
+query = [[minXVal,maxYVal],[maxXVal,minYVal]]
+print('Starting Query Processing')
+query = Querydiagonals(query)
+counter = 0
+times = []
+start_time = time.time()
+for i in range(len(RTrees)-1,-1,-1):
+    print('Enter Y to continue execution. Enter N to stop.')
+    userInput = input()
+    csvWriteData = [["Latitude","Longitude"]]
+    if(userInput == 'N'):
+        break
+    if(userInput == 'Y'):
+        overlapList = []
+        curr = RTrees[i]
+        processQuery(query,curr,overlapList)
+        for i in overlapList:
+            for j in i:
+                csvWriteData.append(scaler.inverse_transform([[j.longitude,j.latitude]])[0])
+        counter+=1
+        with open(f'resultsOfIteration-{counter}.csv', "w", newline="") as csvfile:
+            csvwriter = csv.writer(csvfile)
+            csvwriter.writerows(csvWriteData)
+        print(f'Total number of results : {len(overlapList)}')
+        print(f'Data written successfully to resultsOfIteration-{counter}.csv')
+        print(f'------End of Iteration {counter} ------')
+    else:
+        continue
+    times.append((time.time() - start_time))
+print("--- %s seconds to run query Processing ---" % (time.time() - start_time))
 
